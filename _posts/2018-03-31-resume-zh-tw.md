@@ -5,10 +5,11 @@ date: 2018-03-31 19:21:33 +0800
 categories: resume
 ---
 
-# Tim Chen, 陳怡然
+# Tim Chen, 陳怡然 [![GitHub](/assets/images/GitHub-Mark-32px.png)](https://github.com/InfernoPC) [![Linkedin](/assets/images/linkedin-icon-32.png)](https://www.linkedin.com/in/tim-chen-a51829161/) [![e-Mail](/assets/images/gmail-icon-32.png)](mailto://inferno6562@gmail.com)
 ```
 E-mail: inferno6562@gmail.com
 ```
+
 
 ## 擅長項目
 
@@ -35,7 +36,6 @@ E-mail: inferno6562@gmail.com
 * master in Ruby on Rails
 * AngularJS, Node.js
 * Machine Learning with Python
-* ERP development
 
 ## 工作經歷
 
