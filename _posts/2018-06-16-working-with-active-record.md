@@ -13,6 +13,7 @@ tags: [RubyOnRails]
 * Class Name 對應 Database Table name
 * 預設的 primary key 是 "id"
 * 繼承 ActiveRecord::Base
+
 ```
 class Client < ActiveRecord::Base
 end
@@ -21,6 +22,7 @@ end
 ## Relationship
 
 * model之間的關聯之一 :has_many
+
 ```
 class Client < ActiveRecord::Base
 	has_many :billing_codes
@@ -32,6 +34,7 @@ end
 ## Setting Names Manually
 
 * 自訂對應的 SQL table name 及 primary key
+
 ```
 class Client < ActiveRecord::Base
 	self.table_name = "CLIENT"
@@ -42,6 +45,7 @@ end
 * 從application層級，修改所有model的對應table名稱
 for legacy naming schemes
 in config/application.rb:
+
 ```
 # turn off table pluralization
 config.active_record.pluralize_table_names = false
@@ -62,6 +66,7 @@ config.active_record.table_name_suffix = ???
 ## default attribute value
 
 * 自訂預設值
+
 ```
 # default value of category is 'n/a' instead of nil
 class TimesheetEntry < ActiveRecord::Base
