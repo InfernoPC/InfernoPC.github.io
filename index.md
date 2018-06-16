@@ -1,46 +1,27 @@
 ---
 layout: page
-title: Hello World!
-tagline: Supporting tagline
+title: Welcome to Tim Chen's Blog!
 ---
 {% include JB/setup %}
 
-Read [Jekyll Quick Start](http://jekyllbootstrap.com/usage/jekyll-quick-start.html)
+## About Me
 
-Complete usage and documentation available at: [Jekyll Bootstrap](http://jekyllbootstrap.com)
+blah blah blah!
 
-## Update Author Attributes
+[![Linkedin](/assets/images/linkedin-icon-32.png)](https://www.linkedin.com/in/tim-chen-a51829161/) [![e-Mail](/assets/images/gmail-icon-32.png)](mailto:inferno6562@gmail.com)
 
-In `_config.yml` remember to specify your own data:
-    
-    title : My Blog =)
-    
-    author :
-      name : Name Lastname
-      email : blah@email.test
-      github : username
-      twitter : username
+## Main Projects
 
-The theme should reference these variables whenever needed.
-    
-## Sample Posts
+2014/09 ~ Now: [Dimension Computer Technology](/project/2018/06/05/project-list)
 
-This blog contains sample posts which help stage pages and blog data.
-When you don't need the samples anymore just delete the `_posts/core-samples` folder.
+## Side Projects
 
-    $ rm -rf _posts/core-samples
+[![GitHub](/assets/images/GitHub-Mark-32px.png)](https://github.com/InfernoPC)
 
-Here's a sample "posts list".
+## Resumes
 
-<ul class="posts">
-  {% for post in site.posts %}
-    <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ul>
+[Traditional Chinese](/resume/2018/03/31/resume-zh-tw)
 
-## To-Do
-
-This theme is still unfinished. If you'd like to be added as a contributor, [please fork](http://github.com/plusjade/jekyll-bootstrap)!
-We need to clean up the themes, make theme usage guides with theme-specific markup examples.
+[English](/resume/2018/05/30/resume-en)
 
 
