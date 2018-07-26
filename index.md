@@ -10,9 +10,14 @@ blah blah blah!
 
 [![Linkedin](/assets/images/linkedin-icon-32.png)](https://www.linkedin.com/in/tim-chen-a51829161/) [![e-Mail](/assets/images/gmail-icon-32.png)](mailto:inferno6562@gmail.com)
 
+## Careers
+
+* 2014/09 ~ 2018/07: [Dimension Computer Technology](http://www.dimension.com.tw/)
+* 2018/07 ~ now: [IEI Integration Corp.](https://www.ieiworld.com/)
+
 ## Main Projects
 
-2014/09 ~ Now: [Dimension Computer Technology](/project/2018/06/05/project-list)
+* [Dimension Computer Technology](/project/2018/06/05/project-list)
 
 ## Side Projects
 
