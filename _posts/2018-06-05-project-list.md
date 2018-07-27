@@ -6,7 +6,7 @@ categories: project
 ---
 
 ## 訊達官網
-[![DCT Website](/assets/images/DCT_website.jpg)](http://www.dimension.com.tw/)
+[![DCT Website](/assets/images/projects/DCT_website.jpg)](http://www.dimension.com.tw/)
 
 負責項目：
 * 頁面的新增與調整
@@ -14,7 +14,7 @@ categories: project
 
 
 ## 訊達內部資料分析網站
-![DCT Performance Chart](/assets/images/DCT_performance_chart.jpg)
+![DCT Performance Chart](/assets/images/projects/DCT_performance_chart.jpg)
 
 負責項目：
 * 頁面的新增與調整
@@ -23,14 +23,14 @@ categories: project
 
 
 ## 訊達內部 ERP 系統
-![DCT Notes Client](/assets/images/DCT_notes_client.jpg)
+![DCT Notes Client](/assets/images/projects/DCT_notes_client.jpg)
 
 負責項目：
 * 資料庫及系統開發
 * 問題維護及處理
 
 ## 客戶 ERP 系統開發
-![Carson ERP](/assets/images/Carson_ERP.jpg)
+![Carson ERP](/assets/images/projects/Carson_ERP.jpg)
 
 負責項目：
 * 系統架構規劃與分析

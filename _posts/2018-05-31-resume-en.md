@@ -6,11 +6,11 @@ categories: resume
 ---
 
 # Tim Chen, 陳怡然 
-[![GitHub](/assets/images/GitHub-Mark-32px.png)](https://github.com/InfernoPC) [![Linkedin](/assets/images/linkedin-icon-32.png)](https://www.linkedin.com/in/tim-chen-a51829161/) [![e-Mail](/assets/images/gmail-icon-32.png)](mailto:inferno6562@gmail.com)
+[![GitHub](/assets/images/simple-icons/GitHub-Mark-32px.png)](https://github.com/InfernoPC) [![Linkedin](/assets/images/simple-icons/linkedin-icon-32.png)](https://www.linkedin.com/in/tim-chen-a51829161/) [![e-Mail](/assets/images/simple-icons/gmail-icon-32.png)](mailto:inferno6562@gmail.com)
 
 
-[![Project](/assets/images/project-icon-32.png)Projects](/project/2018/06/05/project-list)
-[![Side Project](/assets/images/side-project-icon-32.png)Side Projects](https://github.com/InfernoPC)
+[![Project](/assets/images/simple-icons/project-icon-32.png)Projects](/blog/2018/06/05/project-list)
+[![Side Project](/assets/images/simple-icons/side-project-icon-32.png)Side Projects](https://github.com/InfernoPC)
 
 ```
 E-mail: inferno6562@gmail.com
