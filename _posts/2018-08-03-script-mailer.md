@@ -20,6 +20,7 @@ mail.send
 
 ```vb
 mail.isIntercepted = True
+mail.send ' send to current user only
 ```
 
 ## edit body
