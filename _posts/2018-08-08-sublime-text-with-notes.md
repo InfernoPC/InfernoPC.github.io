@@ -3,7 +3,7 @@ layout: post
 title: "sublime text with notes"
 description: ""
 category: 
-tags: []
+tags: [Notes, SublimeText]
 ---
 
 # steps
