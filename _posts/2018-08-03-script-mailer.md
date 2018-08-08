@@ -67,6 +67,7 @@ Class Mailer
 	End Sub
 	
 	Sub compose
+		Call me.mail_doc.Computewithform(False, False)
 		Call workspace.Editdocument(True, me.mail_doc)
 	End Sub
 	
