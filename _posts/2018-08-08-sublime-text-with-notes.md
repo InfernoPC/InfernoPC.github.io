@@ -15,7 +15,7 @@ tags: [Notes, SublimeText]
 	* goto url: <https://packagecontrol.io/installation>
 	* copy installation code of SUBLIME TEXT 3
 	* open sublime text 3
-	* open console by press ``ctrl+` ``
+	* open console by press ``ctrl+`(backtick) ``
 	* paste installation code then press enter
 	* restart sublime text 3
 3. import lotus script and formula syntax
