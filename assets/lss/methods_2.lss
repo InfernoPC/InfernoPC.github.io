@@ -1,0 +1,62 @@
+Option Public
+Option Declare
+%Include "lsconst.lss"
+
+
+%REM 
+	=================================================================================
+	General const variable
+	=================================================================================
+	
+%END REM
+' Date/Time const (public) ------------------------------------------------------Date/Time const (public)
+Const FULL_DATETIME_FORMAT = "YYYY/MM/DD HH:mm:ss"
+Const FULL_DATE_FORMAT = "YYYY/MM/DD"
+Const FULL_TIME_FORMAT = "HH:mm:ss"
+Const YEAR_MONTH_FORMAT = "YYYY/MM"
+Const MONTH_DAY_FORMAT = "MM/DD"
+Const HOUR_MINUTE_FORMAT = "HH:mm"
+Function subset(array, from_index As Integer, to_index As Integer)
+	Dim return_array As Variant
+	ReDim return_array(to_index - from_index) As Variant
+	Dim index As Integer
+	For index = from_index To to_index
+		return_array(index - from_index) = array(index)
+	Next
+	subset = return_array
+End Function
+Function ifThenElse(p_condition As Boolean, p_return_if_true, p_return_if_false)
+	If p_condition Then
+		If IsObject(p_return_if_true) Then
+			Set ifThenElse = p_return_if_true
+		Else
+			ifThenElse = p_return_if_true
+		End If
+	Else
+		If IsObject(p_return_if_false) Then
+			Set ifThenElse = p_return_if_false
+		Else
+			ifThenElse = p_return_if_false
+		End If
+	End If
+End Function
+Sub setVar(p_set_variable, p_from_variable)
+	If IsObject(p_from_variable) Then
+		Set p_set_variable = p_from_variable
+	Else
+		p_set_variable = p_from_variable
+	End If
+End Sub
+Function getServerTime As Variant
+	Dim session As New NotesSession
+	Dim db As NotesDatabase, doc As NotesDocument
+	Set db = session.currentdatabase
+	Set doc = db.Createdocument
+	getServerTime = doc.Created
+End Function
+Function formatToday As String
+	formatToday = Format$(Today, FULL_DATE_FORMAT)
+End Function
+Function formatNow As String
+	formatNow = Format$(Now, FULL_DATETIME_FORMAT)
+End Function

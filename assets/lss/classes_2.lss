@@ -1,0 +1,1828 @@
+Option Public
+Option Declare
+' public libraries
+Use "$LS_Operators_2"
+Use "$LS_Methods_2"
+
+%REM
+	classes hierarchy
+	 
+	BasicClass
+		L Current
+		L ID
+			L Employee
+		L Logger
+			L ItemLogger
+				L APLogger
+		L Mailer
+			L TestMailer
+			L ErrorMailer
+		L Profile
+		L Array
+		L Find
+		L FindHistory(private)
+		L NotesURL
+%END REM
+
+%REM
+	=================================================================================
+	Class const variable
+	=================================================================================
+%END REM
+' Logger const (public) ---------------------------------------------------------Logger const (public)
+' 有大小關係: DEBUG_LEVEL < INFO_LEVEL < WARNING_LEVEL < ERROR_LEVEL < DISABLE_LEVEL
+Const DEBUG_LEVEL = 1
+Const INFO_LEVEL = 2
+Const WARN_LEVEL = 3
+Const ERROR_LEVEL = 4
+Const DISABLE_LEVEL = 9
+' log format variable: 可用以下const串成想要的log format
+Const LOGGER_TIME = "${Time}" ' 記錄時間，配合 log_time_format 使用
+Const LOGGER_FUNCTION_NAME = "${FunctionName}" ' 記錄 function/sub 名稱
+Const LOGGER_LEVEL = "${Level}" ' 記錄 log 程度
+Const LOGGER_MESSAGE = "${Message}" ' 記錄 log 訊息
+Const LOGGER_USERNAME = "${Username}" ' 記錄當時的user
+
+' ItemLogger const (private) ---------------------------------------------------------ItemLogger const (private)
+Private Const FIELD_TEXT_SIZE_LIMIT = 30000 ' 欄位有32k的限制，預留一些空間，因此將判斷的限制訂為30k
+
+' APLogger const (private) ---------------------------------------------------------APLogger const (private)
+Private Const LOG_DB_FILEPATH = "APLog.nsf" ' APlog db filepath
+Private Const LOG_FORM_NAME = "FAC16TAXP003" ' form name in APLog db
+Private Const LOG_FIELD_NAME = "details" ' log field name in form
+Private Const ERROR_LOGTYPE = 0 ' error log type of log document
+Private Const NORMAL_LOGTYPE = 1 ' normal log type of log document
+Private Const LOG_START_TIME_FIELD = "Created" ' field name of starting logging time
+Private Const LOG_END_TIME_FIELD = "closed" ' field name of finishing logging time
+
+' Error mail sendto -------------------------------------------------------------------- Error mail sendto
+' Const ERROR_MAIL_SENDTO = "NotesAlert"
+Const ERROR_MAIL_SENDTO = "Tim Chen/IEITW/IEI"
+
+' Global Address Book --------------------------------------------------------------------
+Const GLOBAL_ADDRESS_BOOK_FILEPATH = "global/ieiworldaddressbook.nsf"
+%REM
+	reserve the flexibilities of all classes
+%END REM
+Class BasicClass
+	
+	' class name
+	Property Get className As String
+		classname = "BasicClass"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = ""
+	End Property
+	
+	' obj.toString to display this object in string format
+	Function toString As String
+		toString = "<#" & me.className & ":" & me.classInfo & ">"
+	End Function
+End Class
+%REM
+	get everything about current objects
+%END REM
+Class Current As BasicClass
+
+	ui_database_ As NotesUIDatabase ' cache of uiDatabase
+	database_ As NotesDatabase ' cache of database
+	ui_view_ As NotesUIView ' cache of uiView
+	view_ As NotesView ' cache of view
+	agent_ As NotesAgent ' cache of agent
+	ui_document_ As NotesUIDocument ' cache of uiDocument
+	document_ As NotesDocument ' cache of document
+	
+	id_ As ID ' cache of user
+	server_ As ID ' cache of server
+	
+	selected_documents_ As NotesDocumentCollection ' cache of selectedDocuments
+	
+	' get new NotesUIWorkspace
+	Property Get workspace As NotesUIWorkspace
+		Set workspace = New NotesUIWorkspace
+	End Property
+	
+	' get New NotesSession
+	Property Get session As NotesSession
+		Set session = New NotesSession
+	End Property
+	
+	' get NotesUIWorkspace.CurrentDatabase
+	Property Get uiDatabase As NotesUIDatabase
+		If me.ui_database_ Is Nothing Then Set me.ui_database_ = me.workspace.Currentdatabase
+		Set uiDatabase = me.ui_database_
+	End Property
+	
+	' get NotesSession.CurrentDatabase
+	Property Get database As NotesDatabase
+		If me.database_ Is Nothing Then Set me.database_ = me.session.Currentdatabase
+		Set database = me.database_
+	End Property
+	
+	' get NotesUIWorkspace.CurrentView
+	Property Get uiView As NotesUIView
+		If me.ui_view_ Is Nothing Then Set me.ui_view_ = me.workspace.Currentview
+		Set uiView = me.ui_view_
+	End Property
+	
+	' get NotesUIWorkspace.CurrentView.View
+	Property Get view As NotesView
+		If Not me.uiView Is Nothing And me.view_ Is Nothing Then Set me.view_ = me.uiView.View
+		Set me.view = me.view_
+	End Property
+	
+	' get NotesSession.CurrentAgent
+	Property Get agent As NotesAgent
+		If me.agent_ Is Nothing Then Set me.agent_ = me.session.Currentagent
+		Set agent = me.agent_
+	End Property
+	
+	' get NotesUIWorkspace.CurrentDocument
+	Property Get uiDocument As NotesUIDocument
+		If me.ui_document_ Is Nothing Then Set me.ui_document_ = me.workspace.Currentdocument
+		Set uiDocument = me.ui_document_
+	End Property
+	
+	' get NotesUIWorkspace.CurrentDocument.Document
+	Property Get document As NotesDocument
+		If Not me.Uidocument Is Nothing And me.document_ Is Nothing Then Set me.document_ = me.uiDocument.Document
+		Set document = me.document_
+	End Property
+	
+	' get NotesSession.CurrentDatabase.UnprocessedDocuments
+	Property Get selectedDocuments As NotesDocumentCollection
+		If me.selected_documents_ Is Nothing Then Set me.selected_documents_ = me.Database.unprocessedDocuments
+		Set selectedDocuments = me.selected_documents_
+	End Property
+	
+	' get current user name
+	Property Get user As ID
+		If me.id_ Is Nothing Then Set me.Id_ = ID(Me)
+		Set user = me.id_
+	End Property
+	
+	Property Get username As String 
+		username = me.user.abbreviated
+	End Property
+	
+	' get current server name
+	Property Get server As ID
+		If me.server_ Is Nothing Then Set me.server_ = ID(me.database.Server)
+		Set server = me.server_
+	End Property
+	
+	' get profile document in current database
+	Function profile(p_profile_name) As Profile
+		Set profile = New Profile(Me, p_profile_name)
+	End Function
+	
+	' get information about current
+	Property Get information As String
+		information = "current server: " & me.Server.Abbreviated & Chr(10) & "current database: " & me.Database.filepath & Chr(10)
+		If Not me.View Is Nothing Then information = information & "current view: " & me.view.Name & Chr(10)
+		If Not me.Agent Is Nothing Then information = information & "current agent: " & me.Agent.Name & Chr(10)
+		If Not me.session.Documentcontext Is Nothing Then information = information & "document run in agent: " & me.session.Documentcontext.notesurl & Chr(10)
+		If Not me.document Is Nothing Then information = information & "current document: " & me.document.notesurl & Chr(10)
+	End Property
+	
+	' current position
+	Property Get direction As String
+		direction = me.Database.Title
+		If Not me.View Is Nothing Then direction = direction & "\View: " & me.view.name
+		If Not me.agent Is Nothing Then direction = direction & "\Agent: " & me.agent.name
+		If Not me.Session.Documentcontext Is Nothing Then direction = direction & "\Doc: " & me.Session.Documentcontext.Universalid
+		If Not me.Document Is Nothing Then direction = direction & "\Doc: " & me.document.Universalid
+	End Property
+	
+	' class name
+	Property Get className As String
+		classname = "Current"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = ""
+	End Property
+
+	' syntax sugar: same as workspace
+	Property Get ws As NotesUIWorkspace
+		Set ws = me.workspace
+	End Property
+	
+	' syntax sugar: same as session
+	Property Get s As NotesSession
+		Set s = me.session
+	End Property
+	
+	' syntax sugar: same as uiDatabase
+	Property Get uidb As NotesUIDatabase
+		Set uidb = me.uiDatabase
+	End Property
+	
+	' syntax sugar: same as database
+	Property Get db As NotesDatabase
+		Set db = me.database
+	End Property
+	
+	' syntax sugar: same as uiDocument
+	Property Get uidoc As NotesUIDocument
+		Set uidoc = me.uiDocument
+	End Property
+	
+	' syntax sugar: same as document
+	Property Get doc As NotesDocument
+		Set doc = me.document
+	End Property
+
+End Class
+%REM
+	extending more methods from NotesName class
+%END REM
+Class ID As BasicClass
+
+	name_ As NotesName ' cache of name
+	
+	' new(username) or new(Current) 
+	Sub New(p_name)
+		If Not IsObject(p_name) Then
+			Set me.name_ = New NotesName(p_name)
+		ElseIf p_name IsA "Current" Then
+			Set me.name_ = New NotesName(p_name.session.username)
+		End If
+	End Sub
+
+
+	' inherite property from NotesName
+	Property Get Abbreviated As String
+		Abbreviated = me.name_.Abbreviated
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Addr821 As String
+		Addr821 = me.name_.Addr821
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Addr822Comment1 As String
+		Addr822Comment1 = me.name_.Addr822comment1
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Addr822Comment2 As String
+		Addr822Comment2 = me.name_.Addr822comment2
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Addr822Comment3 As String
+		Addr822Comment3 = me.name_.Addr822comment3
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Addr822LocalPart As String
+		Addr822LocalPart = me.name_.Addr822LocalPart
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Addr822Phrase As String
+		Addr822Phrase = me.name_.Addr822Phrase
+	End Property
+	
+	' inherite property from NotesName
+	Property Get ADMD As String
+		ADMD = me.name_.ADMD
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Canonical As String
+		Canonical = me.name_.Canonical
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Common As String
+		Common = me.name_.Common
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Country As String
+		Country = me.name_.Country
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Generation As String
+		Generation = me.name_.Generation
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Given As String
+		Given = me.name_.Given
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Initials As String
+		Initials = me.name_.Initials
+	End Property
+	
+	' inherite property from NotesName
+	Property Get IsHierarchical As Boolean
+		IsHierarchical = me.name_.IsHierarchical
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Keyword As String
+		Keyword = me.name_.Keyword
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Language As String
+		Language = me.name_.Language
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Organization As String
+		Organization = me.name_.Organization
+	End Property
+	
+	' inherite property from NotesName
+	Property Get OrgUnit1 As String
+		OrgUnit1 = me.name_.OrgUnit1
+	End Property
+	
+	' inherite property from NotesName
+	Property Get OrgUnit2 As String
+		OrgUnit2 = me.name_.OrgUnit2
+	End Property
+	
+	' inherite property from NotesName
+	Property Get OrgUnit3 As String
+		OrgUnit3 = me.name_.OrgUnit3
+	End Property
+	
+	' inherite property from NotesName
+	Property Get OrgUnit4 As String
+		OrgUnit4 = me.name_.OrgUnit4
+	End Property
+	
+	' inherite property from NotesName
+	Property Get PRMD As String
+		PRMD = me.name_.PRMD
+	End Property
+	
+	' inherite property from NotesName
+	Property Get Surname As String
+		Surname = me.name_.Surname
+	End Property
+
+	' customized property: get roles on current db
+	Property Get Roles As Variant
+		Roles = current.db.Queryaccessroles(me.name_.Abbreviated)
+	End Property
+	
+	' customized property: get ACL level on current db
+	Property Get ACLLevel As Integer
+		ACLLevel = current.db.QueryAccess(me.name_.Abbreviated)
+	End Property
+	
+	' customized property: get roles on specific db 
+	Property Get RolesOnDB(p_db As NotesDatabase) As Variant
+		RolesOnDB = p_db.QueryAccessRoles(me.name_.Abbreviated)
+	End Property
+	
+	' customized property: get ACL level on specific db
+	Property Get ACLLevelOnDB(p_db As NotesDatabase) As Integer
+		ACLLevelOnDB = p_db.QueryAccess(me.name_.Abbreviated)
+	End Property
+
+	' customized property: formatted signature
+	Property Get signature As String
+		signature = me.Abbreviated & " - " & formatNow
+	End Property
+	
+	' class name
+	Property Get className As String
+		className = "ID"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = me.Abbreviated
+	End Property
+	
+
+End Class
+%REM
+	get profile docuement
+%END REM
+Class Profile As BasicClass
+	
+	db_ As NotesDatabase ' cache of database
+	doc_ As NotesDocument ' cache of profile document
+	
+	' new(database, profile_name), or new(current, profile_name)
+	Sub New(p_database, p_profile_name)
+		If p_database IsA "Current" Then
+			Set me.db_ = p_database.db
+		Else
+			Set me.db_ = p_database
+		End If
+		ObjectHistory.add me.db_
+		Set me.doc_ = me.db_.getProfileDocument(p_profile_name)
+		me.doc_.form = p_profile_name ' in case that profile has not been created yet
+	End Sub
+	
+	' get profile document(in order to get the content on it)
+	Property Get document As NotesDocument 
+		Set document = me.doc_ 
+	End Property
+	
+	' syntax sugar: sames as document
+	Property Get doc As NotesDocument 
+		Set doc = me.doc_ 
+	End Property
+	
+	' class name
+	Property Get className As String 
+		className = "Profile" 
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = me.doc_.form(0) 
+	End Property
+		
+End Class
+
+%REM
+	a logger can log on status bar like print method
+%END REM
+Class Logger As BasicClass
+
+	title_ As String ' logger title
+	
+	level_ As Integer ' logger level
+	' levels are: DEBUG_LEVEL, INFO_LEVEL, WARN_LEVEL, ERROR_LEVEL, DISABLE_LEVEL
+	' log level
+	'              | DEBUG_LEVEL | INFO_LEVEL | WARN_LEVEL | ERROR_LEVEL | DISABLE_LEVEL
+	' -------------------------------------------------------------------------------------
+	' logger.debug |      V      |            |            |             |
+	' -------------------------------------------------------------------------------------
+	' logger.info  |      V      |      V     |            |             |
+	' -------------------------------------------------------------------------------------
+	' logger.warn  |      V      |      V     |      V     |             |
+	' -------------------------------------------------------------------------------------
+	' logger.error |      V      |      V     |      V     |      V      |
+	
+	time_format_ As String ' time format of log message
+	' time_format_ is used with Format(time, time_format_)
+	' therefore time_format_ can be set to "YYYY/MM/DD HH:mm:ss", "YYYY/MM/DD" or others
+	
+	message_format_ As String ' format of log message
+	' message_format_ is the combination of variables
+	' variables are: LOGGER_TIME, LOGGER_FUNCTION_NAME, LOGGER_LEVEL, LOGGER_MESSAGE, LOGGER_USERNAME
+	' default format is: 
+	' 	LOGGER_TIME (in LOGGER_FUNCTION_NAME): [LOGGER_LEVEL] LOGGER_MESSAGE
+	' 	ex. 2019/02/19 12:00:00 (in INITIALIZE): [I] start agent
+	
+	is_sending_error_mail As Boolean ' send / not send mail while logger.error
+	
+	' new(logger_name) or new(current)
+	Sub New(p_title)
+		If Not IsObject(p_title) Then
+			me.title_ = p_title
+		ElseIf p_title IsA "Current" Then
+			me.title_ = p_title.direction
+		End If
+		
+		me.level_ = INFO_LEVEL
+		me.time_format_ = FULL_DATETIME_FORMAT
+		me.message_format_ = LOGGER_TIME & " (in " & LOGGER_FUNCTION_NAME & "): [" & LOGGER_LEVEL & "] " & LOGGER_MESSAGE
+		me.is_sending_error_mail = True
+	End Sub
+
+	' log message with DEBUG_LEVEL
+	Sub debug(p_message)
+		If DEBUG_LEVEL >= me.level_ Then
+			Print formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "D", p_message)(0)
+		End If
+	End Sub
+	
+	' log message with INFO_LEVEL
+	Sub info(p_message)
+		If INFO_LEVEL >= me.level_ Then
+			Print formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "I", p_message)(0)
+		End If
+	End Sub
+	
+	' log message with WARN_LEVEL
+	Sub warn(p_message)
+		If WARN_LEVEL >= me.level_ Then
+			Print formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "W", p_message)(0)
+		End If
+	End Sub
+	
+	' log message with ERROR_LEVEL
+	Sub Error(p_message)
+		If ERROR_LEVEL >= me.level_ Then
+			If me.is_sending_error_mail Then sendErrorMail formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "E", p_message)(0)
+			Print formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "E", p_message)(0)
+		End If
+	End Sub
+
+	' get log title
+	Property Get title As String
+		title = me.title_
+	End Property
+	
+	' set log title
+	Property Set title As String
+		me.title_ = title
+	End Property
+	
+	' get log level
+	Property Get level As Integer
+		level = me.level_
+	End Property
+	
+	' set log level
+	Property Set level As Integer
+		me.level_ = level
+	End Property
+	
+	' get TimeFormat
+	Property Get TimeFormat As String
+		TimeFormat = me.time_format_
+	End Property
+	
+	' set TimeFormat
+	Property Set TimeFormat As String
+		me.time_format_ = TimeFormat
+	End Property
+	
+	' get MessageFormat
+	Property Get MessageFormat As String
+		MessageFormat = me.message_format_
+	End Property
+	
+	' set MessageFormat
+	Property Set MessageFormat As String
+		me.message_format_ = MessageFormat
+	End Property
+	
+	' get IsSentErrorMail
+	Property Get IsSentErrorMail As Boolean
+		IsSentErrorMail = me.Is_sending_error_mail
+	End Property
+	
+	' set IsSentErrorMail
+	Property Set IsSentErrorMail As Boolean
+		me.Is_sending_error_mail = IsSentErrorMail 
+	End Property
+	
+	' replace variables in message_format_ to informations
+	Private Function formattingLogMessage(p_log_time, p_function_name, p_log_level, p_message) As Variant
+		
+		Dim return_message(0) As String
+		return_message(0) = me.message_format_
+		
+		return_message(0) = Replace(return_message(0), LOGGER_TIME, Format$(p_log_time, me.time_format_))
+		return_message(0) = Replace(return_message(0), LOGGER_FUNCTION_NAME, p_function_name)
+		return_message(0) = Replace(return_message(0), LOGGER_LEVEL, p_log_level)
+		return_message(0) = Replace(return_message(0), LOGGER_MESSAGE, CStr(p_message))
+		return_message(0) = Replace(return_message(0), LOGGER_USERNAME, Current.user.abbreviated)
+		
+		formattingLogMessage = return_message
+	End Function
+
+	' send error mail
+	Private Sub sendErrorMail(p_message)
+		With ErrorMailer
+			.body.Appendtext |
+Custom error log: 
+	|& p_message &|
+|
+			.send
+		End With
+	End Sub
+	
+	' class name
+	Property Get className As String
+		className = "Logger"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = ""
+	End Property
+End Class
+%REM
+	class for creating and sending mail easily
+%END REM
+Class Mailer As BasicClass
+	
+	doc_ As NotesDocument ' cache of current mail document
+	body_ As NotesRichTextItem ' cache of current mail body
+	
+	' new
+	Sub New
+		Set me.doc_ = Current.database.createDocument
+		me.doc_.form = "memo"
+		Set me.body_ = New NotesRichTextItem(me.doc_, "body")
+	End Sub
+
+	' open the mail document on current workspace
+	Sub compose
+		me.doc_.Computewithform False, False
+		Current.workspace.Editdocument True, me.doc_
+	End Sub
+	
+	' send mail
+	Sub send
+		logger.info |A mail with subject "| & me.subject & |" is sent to | & Join(me.sendto, ", ")
+		Stop ' 請於此停止點確認寄信的對象(有開debugger，stop才有效果)
+		me.doc_.Send False, False
+	End Sub
+	
+	' get principle(send from)
+	Property Get principle As Variant
+		principle = me.doc_.principle
+	End Property
+	
+	' set principle(send from)
+	Property Set principle As Variant
+		me.doc_.principle = principle
+	End Property
+	
+	' get subject
+	Property Get subject As String
+		subject = me.doc_.subject(0)
+	End Property
+	
+	' set subject
+	Property Set subject As String
+		me.doc_.subject = subject
+	End Property
+	
+	' get blindCopyTo
+	Property Get blindCopyTo As Variant
+		blindCopyTo = me.doc_.blindCopyTo
+	End Property
+	
+	' set blindCopyTo
+	Property Set blindCopyTo As Variant
+		me.doc_.blindCopyTo = blindCopyTo
+	End Property
+	
+	' get copyTo
+	Property Get copyTo As Variant
+		copyTo = me.doc_.copyTo
+	End Property
+	
+	' set copyTo
+	Property Set copyTo As Variant
+		me.doc_.copyTo = copyTo
+	End Property
+	
+	' get sendTo
+	Property Get sendTo As Variant
+		sendTo = me.doc_.sendTo
+	End Property
+	
+	' set sendTo
+	Property Set sendTo As Variant
+		me.doc_.sendTo = sendTo
+	End Property
+		
+	' get body
+	Property Get body As NotesRichTextItem
+		Set body = me.body_
+	End Property
+	
+	' set body
+	Property Set body As NotesRichTextItem
+		Set me.body_ = body 
+	End Property
+	
+	' get mail document
+	Property Get document As NotesDocument 
+		Set document = me.doc_ 
+	End Property
+	
+	' syntax sugar: same as blindCopyTo
+	Property Get bccto As String 
+		bccto = me.blindCopyTo 
+	End Property
+	
+	' syntax sugar: same as blindCopyTo
+	Property Set bccto As String
+		me.blindCopyTo = bccto 
+	End Property
+	
+	' syntax sugar: same as document
+	Property Get doc As NotesDocument
+		Set doc = me.document
+	End Property
+	
+	' class name
+	Property Get className As String 
+		className = "Mailer"
+	End Property
+	
+	' class information
+	Property Get classInfo As String 
+		classInfo = me.doc_.noteid 
+	End Property
+	
+End Class
+
+Class ErrorMailer As Mailer
+
+	Sub New
+		me.body.Appendtext |
+Error no. |& Err &| Error line |& Erl &| 
+Error message |& Error &|
+Error time |& FormatNow &|
+
+|& Current.Information &|
+
+Current user 
+	|& Current.user.Abbreviated &|
+|
+	End Sub
+
+	Sub send
+		me.sendto = ERROR_MAIL_SENDTO
+		me.subject = "(錯誤通知)" & Err & " " & Error & "(at line " & Erl & ")"
+		logger.info |A error mail with subject "| & me.subject & |" is sent to | & Join(me.sendto, ", ")
+		Stop ' 請於此停止點確認寄信的對象(有開debugger，stop才有效果)
+		me.doc_.Send False, False
+	End Sub
+
+	Property Get className As String 
+		className = "ErrorMailer" 
+	End Property
+	Property Get classInfo As String 
+		classInfo = me.doc_.noteid 
+	End Property
+	
+End Class
+%REM
+	a logger can log on NotesItem object
+%END REM
+Class ItemLogger As Logger
+
+	field_ As NotesItem ' cache of log field
+	is_appending_log_ As Boolean ' prepend log or append log
+	rolling_size_ As Integer ' the rolling count (row count) for preventing from exceeding 32K limit of field
+	
+	' new(logger_name)
+	Sub New(p_title), Logger(p_title)
+		me.is_appending_log_ = True
+		me.rolling_size_ = 0
+	End Sub
+	
+	' get the log field
+	Property Get Field As NotesItem
+		Set Field = me.field_
+	End Property
+	
+	' set the log field
+	Property Set Field As NotesItem
+		Set me.field_ = Field
+	End Property
+	
+	' get rolling size
+	Property Get RollingSize As Integer
+		RollingSize = me.rolling_size_
+	End Property
+	
+	' set rolling size
+	Property Set RollingSize As Integer
+		me.rolling_size_ = RollingSize
+	End Property
+	
+	' log message with DEBUG_LEVEL
+	Sub debug(p_message)
+		If DEBUG_LEVEL >= me.level_ Then
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "D", p_message)
+		End If
+	End Sub
+	
+	' log message with INFO_LEVEL
+	Sub info(p_message)
+		If INFO_LEVEL >= me.level_ Then
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "I", p_message)
+		End If
+	End Sub
+	
+	' log message with WARN_LEVEL
+	Sub warn(p_message)
+		If WARN_LEVEL >= me.level_ Then
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "W", p_message)
+		End If
+	End Sub
+	
+	' log message with ERROR_LEVEL
+	Sub Error(p_message)
+		If ERROR_LEVEL >= me.level_ Then
+			If me.is_sending_error_mail Then sendErrorMail formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "E", p_message)
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "E", p_message)
+		End If
+	End Sub
+	
+	' continue the log message on the last log message
+	Sub Then(p_message)
+		concatMessageToField p_message
+	End Sub
+
+	' add message with a new line
+	Private Sub addMessageToField(p_message)
+		If me.is_appending_log_ Then
+			appendMessageToField p_message
+			While isOverFieldLimit
+				dropFirstMessage
+			Wend
+		Else
+			prependMessageToField p_message
+			While isOverFieldLimit
+				dropLastMessage
+			Wend
+		End If
+	End Sub
+	
+	' add message after last line
+	Private Sub appendMessageToField(p_message)
+		me.field_.values = FullTrim(ArrayAppend(me.field_.values, p_message))
+		If isOverRollingSize Then 
+			me.field_.values = subset(me.field_.values, _
+			UBound(me.field_.values) - me.rolling_size_ + 1, _
+			UBound(me.field_.values))
+		End If
+	End Sub
+	
+	' add message before first line
+	Private Sub prependMessageToField(p_message)
+		me.field_.values = FullTrim(ArrayAppend(p_message, me.field_.values))
+		If isOverRollingSize Then 
+			me.field_.values = subset(me.field_.values, _
+			0, _
+			me.rolling_size_ - 1)
+		End If
+	End Sub
+	
+	' drop the first line
+	Private Sub dropFirstMessage
+		me.field_.values = subset(me.field_.values, _
+		LBound(me.field_.values) + 1, _
+		UBound(me.field_.values))
+	End Sub
+	
+	' drop the last line 
+	Private Sub dropLastMessage
+		me.field_.values = subset(me.field_.values, _
+		LBound(me.field_.values), _
+		UBound(me.field_.values) - 1)
+	End Sub
+	
+	' add the message to the tail of previous message
+	Private Sub concatMessageToField(p_message)
+		If me.is_appending_log_ Then
+			concatMessageToLast p_message
+			While isOverFieldLimit
+				dropFirstMessage	
+			Wend
+		Else
+			concatMessageToFirst p_message
+			While isOverFieldLimit
+				dropLastMessage	
+			Wend
+		End If
+	End Sub
+	
+	' add the message to the tail of last line
+	Private Sub concatMessageToLast(p_message)
+		Dim values As Variant
+		values = me.Field_.Values
+		values(UBound(values)) = values(UBound(values)) & p_message
+		me.Field_.Values = values
+	End Sub
+	
+	' add the message to the tail of first line
+	Private Sub concatMessageToFirst(p_message)
+		Dim values As Variant
+		values = me.Field_.Values
+		values(LBound(values)) = values(LBound(values)) & p_message
+		me.Field_.Values = values
+	End Sub
+	
+	' is log size exceeding limit
+	Private Function isOverFieldLimit As Boolean
+		isOverFieldLimit = (Len(me.field_.Text) > FIELD_TEXT_SIZE_LIMIT)
+	End Function
+	
+	' are log lines exceeding rolling size
+	Private Function isOverRollingSize As Boolean
+		isOverRollingSize = (me.rolling_size_ > 0 And UBound(me.field_.values) > me.rolling_size_)
+	End Function
+	
+	' class name
+	Property Get className As String
+		className = "ItemLogger"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = me.field_.name
+	End Property
+End Class
+%REM
+	log message on APLog database
+%END REM
+Class APLogger As ItemLogger
+
+	db_ As NotesDatabase ' cache of APLog database
+	doc_ As NotesDocument ' cache of APLog document
+	
+	' new(log_name)
+	Sub New(p_title), ItemLogger(p_title)
+		Set me.db_ = New NotesDatabase(current.db.server, LOG_DB_FILEPATH)
+	End Sub
+	
+	' log message with DEBUG_LEVEL
+	Sub debug(p_message)
+		If DEBUG_LEVEL >= me.level_ Then
+			If me.field_ Is Nothing Then createLogDocument
+			If Len(me.field_.Text) + Len(p_message) > FIELD_TEXT_SIZE_LIMIT Then switchToNewLogDocument
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "D", p_message)
+			saveLogDocument
+		End If
+	End Sub
+
+	' log message with INFO_LEVEL
+	Sub info(p_message)
+		If INFO_LEVEL >= me.level_ Then
+			If me.field_ Is Nothing Then createLogDocument
+			If Len(me.field_.Text) + Len(p_message) > FIELD_TEXT_SIZE_LIMIT Then switchToNewLogDocument
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "I", p_message)
+			saveLogDocument
+		End If
+	End Sub
+
+	' log message with WARN_LEVEL
+	Sub warn(p_message)
+		If WARN_LEVEL >= me.level_ Then
+			If me.field_ Is Nothing Then createLogDocument
+			If Len(me.field_.Text) + Len(p_message) > FIELD_TEXT_SIZE_LIMIT Then switchToNewLogDocument
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "W", p_message)
+			saveLogDocument
+		End If
+	End Sub
+
+	' log message with ERROR_LEVEL
+	Sub Error(p_message)
+		If ERROR_LEVEL >= me.level_ Then
+			If me.field_ Is Nothing Then createLogDocument
+			If Len(me.field_.Text) + Len(p_message) > FIELD_TEXT_SIZE_LIMIT Then switchToNewLogDocument
+			If Err Then upgradeToErrorLogType
+			If me.is_sending_error_mail Then sendErrorMail formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "E", p_message)
+			addMessageToField formattingLogMessage(Now, GetThreadInfo(LSI_THREAD_CALLPROC), "E", p_message)
+			saveLogDocument
+		End If
+	End Sub
+	
+	' continue the log message on the last log message
+	Sub Then(p_message)
+		concatMessageToField p_message
+		saveLogDocument
+	End Sub
+	
+	' get APLog database
+	Property Get LogDB As NotesDatabase
+		Set LogDB = me.db_
+	End Property
+	
+	' get APLog document
+	Property Get LogDoc As NotesDocument
+		Set LogDoc = me.doc_
+	End Property
+
+	' create new APLog document
+	Private Sub createLogDocument
+		Set me.doc_ = me.db_.Createdocument
+		With me.doc_
+			.form = LOG_FORM_NAME
+			.agent = me.title_
+			.logType = NORMAL_LOGTYPE
+			.replaceitemvalue LOG_START_TIME_FIELD, .created
+			.details = ""
+			.sourceServer = Current.server.abbreviated
+			.sourceFilePath = Current.db.Filepath
+		End With
+		Set me.field_ = me.doc_.Getfirstitem(LOG_FIELD_NAME)
+	End Sub
+	
+	' switch to new APLog document
+	Private Sub switchToNewLogDocument
+		saveLogDocument
+		Delete me.doc_
+		createLogDocument
+	End Sub
+	
+	' save current APLog document
+	Private Sub saveLogDocument
+		If me.field_.text <> "" Then
+			me.doc_.replaceitemvalue LOG_END_TIME_FIELD, Now
+			me.field_.values = FullTrim(me.field_.values)
+			me.doc_.comments = "共 " & (UBound(me.field_.values)+1) & " 筆紀錄，耗時 " & Format(Now - me.doc_.Created, "Fixed") & " 秒。"
+			me.doc_.save True, False
+		End If
+	End Sub
+	
+	' change catelog to error type
+	Private Sub upgradeToErrorLogType
+		With me.doc_
+			.logType = ERROR_LOGTYPE
+			.functionName = GetThreadInfo(LSI_THREAD_CALLPROC)
+			.err = CStr(Err)
+			.erl = CStr(Erl)
+			.error = CStr(Error)
+		End With
+	End Sub
+
+	' send error mail
+	Private Sub sendErrorMail(p_message)
+		With ErrorMailer
+			.body.Appendtext |
+Custom message: 
+	|& p_message &|
+APlog link: |& me.Doc_.notesurl &| |
+			.body.Appenddoclink me.doc_, me.Doc_.notesurl
+			.send
+		End With
+	End Sub
+	
+	' save APLog document before exit
+	Sub Delete
+		If Not me.doc_ Is Nothing Then saveLogDocument
+	End Sub
+	
+	' class name
+	Property Get className As String
+		classname = "APLogger"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		If Not me.doc_ Is Nothing Then classInfo = me.doc_.Noteid
+	End Property
+End Class
+%REM
+	class for creating and sending test mail easily
+	a test mail will be automatically redirected to current user while sending
+%END REM
+Class TestMailer As Mailer
+
+	' sending the mail to current user
+	Sub send
+		prependAllReceiversToBody
+		redirectTo Current.user.Abbreviated
+		logger.info |A test mail with subject "| & me.subject & |" is sent to | & Join(me.sendto, ", ")
+		Stop ' 請於此停止點確認寄信的對象(有開debugger，stop才有效果)
+		me.doc_.Send False, False
+	End Sub
+
+	' append test message on body for receivers
+	Private Sub prependAllReceiversToBody
+		me.body_.Appendtext |
+	
+------------------- This is a testing mail ------------------------
+Hi, 
+This is a testing mail. 
+If you receive this mail abnormally, please forward it to "NotesAlert" or just ignore it.
+Thanks for your cooperation.
+
+Follows are original receivers
+SendTo |& Join(me.doc_.sendTo, ", ") &|
+
+CopyTo |& Join(me.doc_.copyTo, ", ") &|
+
+BlindCopyTo |& Join(me.doc_.blindCopyTo, ", ") &|
+-------------------------------------------------------------------|
+	End Sub
+	
+	' redirect to current user, remove the other copyto & blindcopyto, and add 測試信件 tag on subject
+	Private Sub redirectTo(p_username)
+		me.doc_.sendto = p_username
+		me.doc_.copyto = ""
+		me.doc_.blindcopyto = ""
+		me.doc_.subject = "(測試信件)" & me.doc_.subject(0) 
+	End Sub
+	
+	' class name
+	Property Get className As String 
+		className = "TestMailer"
+	End Property
+	
+	' class information
+	Property Get classInfo As String 
+		classInfo = me.doc_.noteid 
+	End Property
+	
+End Class
+%REM
+	an arary object that provides useful methods like sort, map, ...
+%END REM
+Class Array As BasicClass
+	
+	values_() As Variant ' the container of array values
+	index_ As Long ' an index for looping
+	lbound_ As Long ' the lower bound of values_
+	ubound_ As Long ' the upper bound of values_
+	
+	' create an empty array
+	' ex. Array.new
+	' ex. set a = EmptyArray
+	Sub New
+		initialize
+	End Sub
+	
+	' get the content at specific index
+	' ex. Array(doc.managers).at(3) -> to get the 4TH manager(index start at 0)
+	Function at(p_index As Long)
+		If me.size > p_index Then setVar at, me.values_(me.lbound_ + p_index)
+	End Function
+	
+	' get the array size
+	' ex. Array(doc.items).size -> returns 3 if doc.items is ["A", "B", "C"]
+	Function size As Long
+		size = me.ubound_ - me.lbound_ + 1
+	End Function
+	
+	' clean all values in array, but not effect the target value
+	' ex. set a = Array(doc.items).clear -> a is empty array but doc.items is not changed 
+	Function clear As Array
+		initialize
+		Set clear = Me
+	End Function
+	
+	' add values after the array
+	' ex. Array(doc.approver1).concat(doc.approver2) -> returns an array with doc.approver1 then doc.approver2
+	Function concat(p_values) As Array
+		If IsArray(p_values) Then
+			expandTail UBound(p_values) - LBound(p_values) + 1
+			For index_ = LBound(p_values) To UBound(p_values)
+				Setvar me.values_(me.lbound_ + index_ + LBound(p_values)), p_values(index_)
+			Next
+		Else
+			expandTail 1
+			setvar me.values_(me.ubound_), p_values
+		End If
+		Set concat = Me
+	End Function
+	
+	' map all values in array to an new one
+	' ex. Array(doc.prices).map(ToString) -> returns [10, 20, 30] if doc.prices is ["10", "20", "30"]
+	Function map(p_operator As BasicOperator) As Array
+		For index_ = me.Lbound_ To me.Ubound_
+			setvar me.values_(index_), p_operator.since(me.values_(index_))
+		Next
+		Set map = Me
+	End Function
+	
+	' returns a string by merging all values seperated by parameter
+	' ex. Array(doc.types).join(", ") -> returns "A, B, C" if doc.types is ["A", "B", "C"]
+	Function joins(seperator) As String
+		joins = Join(me.values_, seperator)
+	End Function
+	
+	' create a new array and map all values to the new array
+	' ex. 
+	' 	set a = Array(doc.qtys) -> a is ["10", "20", "30"] if doc.qtys is ["10", "20", "30"]
+	' 	a.map(toInteger) -> returns [10, 20, 30] but a remains ["10", "20", "30"]
+	Function each(p_operator) As Array
+		Set each = New Array
+		For index_ = me.lbound_ To me.ubound_
+			each.concat p_operator.since(me.values_(index_))
+		Next
+	End Function
+	
+	' returns the display string
+	' ex. Array(doc.qtys).inspect -> returns |["1234"]| (string) if doc.qtys is ["1234"]
+	Function inspect As String
+		Dim inspect_operator As New Inspect
+		inspect = "[" & me.each(inspect_operator).joins(", ") & "]"
+	End Function
+	
+	Private Sub initialize
+		me.lbound_ = 0
+		me.ubound_ = -1
+	End Sub
+	Private Sub expandTail(p_size As Long)
+		ReDim Preserve me.values_(me.lbound_ To me.ubound_ + p_size)
+		me.ubound_ = me.ubound_ + p_size
+	End Sub
+	Private Sub expandFront(p_size As Long)
+		ReDim Preserve me.values_(me.lbound_ - p_size To me.ubound_)
+		me.lbound_ = me.lbound_ - p_size
+	End Sub
+	Private Sub narrowTail(p_size As Long)
+		If me.size > p_size Then
+			ReDim Preserve me.values_(me.lbound_ To me.ubound_ - p_size)
+			me.ubound_ = me.ubound_ - p_size
+		Else
+			initialize
+		End If
+	End Sub
+	Private Sub narrowFront(p_size As Long)
+		If me.size > p_size Then
+			ReDim Preserve me.values_(me.lbound_ + p_size To me.ubound_)
+			me.lbound_ = me.lbound_ + p_size
+		Else
+			initialize
+		End If
+	End Sub
+	
+	Property Get values As Variant
+		values = me.values_
+	End Property
+	Property Get className As String
+		classname = "Array"
+	End Property
+	
+End Class
+%REM
+	get other doc, doc collection, view, agent, or db
+%END REM
+Class Find
+	
+	server_name_ As String ' recording the keyword of server
+	db_ As NotesDatabase ' cache of database
+	db_keyword_ As Variant ' recording the keyword of database
+	view_ As NotesView ' cache of view
+	view_keyword_ As Variant ' recording the keyword of view
+	doc_ As NotesDocument ' cache of document
+	doc_keyword_ As Variant ' recording the keyword of document
+	search_doc_exactly_ As Boolean
+	
+	' return the target database
+	Function database(p_keyword) As NotesDatabase
+		setDatabaseKeyword p_keyword ' set input keyword to object variable
+		findDatabase ' use all keywords to find the target database
+		Set database = me.db_ ' return found database 
+	End Function
+		
+	' set keyword to db keyword
+	' set filepath of current db if keyword is empty string
+	' set nothing if keyword is nothing
+	Private Sub setDatabaseKeyword(p_keyword)
+		If Not IsObject(p_keyword) Then
+			If p_keyword = "" Then
+				me.db_keyword_ = current.db.filepath
+			Else
+				me.db_keyword_ = p_keyword
+			End If
+		Else
+			Set me.db_keyword_ = p_keyword
+		End If
+	End Sub
+	
+	' use server name and db keyword to find database
+	' if server name is not set, use current server name
+	' try using the db keyword as followings to find database:
+	' 	as filepath, ex. name.nsf
+	' 	as replicaID, ex. 48257BD80040CB52
+	'		as url, ex. notes://xxxx.com/xxx/xxx.nsf/
+	' if none of aboves is available, set to current database
+	Private Sub findDatabase
+		' log before start finding database
+		If Not IsObject(me.db_keyword_) Then
+			aplogger.debug Current.username & " is finding database with server name: " & me.Server_name_ & " and db key: " & me.Db_keyword_
+		ElseIf me.db_keyword_ IsA "Current" Then
+			aplogger.debug Current.username & " is finding database with server name: " & me.Server_name_ & " and db key: " & me.Db_keyword_.toString
+		ElseIf me.db_keyword_ IsA "NotesDatabase" Then
+			aplogger.debug Current.username & " is finding database with server name: " & me.Server_name_ & " and db object: " & me.Db_keyword_.filepath
+		Else
+			aplogger.debug Current.username & " is finding database with server name: " & me.Server_name_ & " and db object: Unknown"
+		End If
+		
+		' start finding database
+		If me.server_name_ = "" Then findServerName
+		If Not IsObject(me.db_keyword_) Then
+			On Error Resume Next
+			' maybe p_keyword is filepath
+			Set me.db_ = New NotesDatabase(me.server_name_, me.db_keyword_)
+			' maybe p_keywrod is replicaID
+			If me.db_.title = "" Then Call me.db_.Openbyreplicaid(me.server_name_, me.db_keyword_)
+			' maybe p_keyword is url
+			If me.db_.title = "" Then Set me.db_ = NotesURL(me.db_keyword_).getDatabase
+			' maybe p_keyword is empty string
+			If me.db_.title = "" Then Set me.db_ = current.db
+			On Error GoTo 0
+			If me.db_.title = "" Then Set me.db_ = Nothing
+		Else
+			If me.db_keyword_ IsA "Current" Then
+				Set me.db_ = me.db_keyword_.database
+			ElseIf me.db_keyword_ IsA "NotesDatabase" Then
+				Set me.db_ = me.db_keyword_
+			Else
+				Set me.db_ = Nothing
+			End If
+		End If
+		
+		' log after finding database
+		If me.db_ Is Nothing Then
+			aplogger.debug "database is not found"
+		Else
+			ObjectHistory.add me.db_
+			aplogger.debug "database is found: " & me.db_.Server & " " & me.Db_.Filepath
+		End If
+	End Sub
+	
+	' find server name
+	' use current server name if is not set yet
+	Private Sub findServerName
+		If me.server_name_ = "" Then me.server_name_ = Current.Server.Abbreviated
+	End Sub
+	
+	' find something on specific server
+	Function onServer(p_server_name) As Find
+		setServerName p_server_name
+		Set onServer = Me
+	End Function
+	
+	' set keyword to server name
+	Private Sub setServerName(p_keyword)
+		If Not IsObject(p_keyword) Then
+			If p_keyword = "" Then
+				me.server_name_ = Current.server.abbreviated
+			Else
+				me.server_name_ = p_keyword
+			End If
+		ElseIf p_keyword IsA "ID" Or p_keyword IsA "NotesName" Then
+			me.server_name_ = p_keyword.abbreviated
+		End If
+	End Sub
+	
+	' find view with keyword
+	Function view(p_keyword) As NotesView
+		setViewKeyword p_keyword
+		findView
+		Set view = me.view_
+	End Function
+
+	' set view keyword for search	
+	Private Sub setViewKeyword(p_keyword)
+		If Not IsObject(p_keyword) Then
+			me.View_keyword_ = p_keyword
+		Else
+			Set me.View_keyword_ = p_keyword
+		End If
+	End Sub
+	
+	' start find view with all keywords
+	Private Sub findView
+		' log before start finding view
+		If Not IsObject(me.View_keyword_) Then
+			aplogger.debug Current.username & " is finding view with view key: " & me.view_keyword_
+		ElseIf me.view_keyword_ IsA "NotesView" Then
+			aplogger.debug Current.username & " is finding view with view object: " & me.view_keyword_.name
+		Else
+			aplogger.debug Current.username & " is finding view with view object: Unknown"
+		End If
+		
+		' start finding view
+		If me.db_ Is Nothing Then findDatabase
+		
+		If me.db_ Is Nothing Then
+			Set me.View_ = Nothing
+		Else
+			If Not IsObject(me.View_keyword_) Then
+				If me.view_keyword_ = "" Then 
+					Set me.View_ = Nothing
+				Else
+					On Error Resume Next
+					Set me.View_ = me.Db_.Getview(CStr(me.View_keyword_))
+					If me.view_ Is Nothing Then Set me.view_ = NotesURL(me.view_keyword_).getView
+					On Error GoTo 0
+				End If
+			Else
+				If me.View_keyword_ IsA "NotesView" Then
+					Set me.view_ = me.View_keyword_
+				ElseIf me.view_keyword_ IsA "Current" Then
+					Set me.view_ = me.view_keyword_.view
+				Else
+					Set me.View_ = Nothing
+				End If
+			End If
+		End If
+		
+		' log after finding view
+		If me.view_ Is Nothing Then
+			aplogger.debug "view is not found"
+		Else
+			aplogger.debug "view is found: " & me.view_.Name
+		End If
+	End Sub
+	
+	' find something on specific database
+	Function onDB(p_keyword) As Find
+		setDatabaseKeyword p_keyword
+		Set onDB = Me
+	End Function
+	
+	' find document with keywords
+	Function document(p_keyword) As NotesDocument
+		setDocKeyword p_keyword
+		findDocument
+		Set document = me.doc_
+	End Function
+	
+	' find something on specific view
+	Function onView(p_keyword) As Find
+		setViewKeyword p_keyword
+		Set onView = Me
+	End Function
+	
+	' the exactly parameter of getDocumentByKey / getAllDocumentsByKey
+	Function exactly As Find
+		me.search_doc_exactly_ = True
+		Set exactly = Me
+	End Function
+	
+	' set keyword of document
+	Private Sub setDocKeyword(p_keyword)
+		If Not IsObject(p_keyword) Then
+			me.doc_keyword_ = p_keyword
+		Else
+			Set me.doc_keyword_ = p_keyword
+		End If
+	End Sub
+	
+	' find document with all keywords
+	Private Sub findDocument
+		' log before start finding document
+		If Not IsObject(me.doc_keyword_) Then
+			If IsArray(me.doc_keyword_) Then
+				aplogger.debug Current.username & " is finding document with keys: " & Join(me.doc_keyword_, ", ")
+			Else
+				aplogger.debug Current.username & " is finding document with key: " & me.doc_keyword_
+			End If
+		ElseIf me.doc_keyword_ IsA "NotesDocument" Then
+			aplogger.debug Current.username & " is finding document with object: NotesDocument"
+		Else
+			aplogger.debug Current.username & " is finding document with object: Unknown"
+		End If
+		
+		' find document
+		If Not IsObject(me.doc_keyword_) Then
+			If IsArray(me.doc_keyword_) Then
+				If me.view_ Is Nothing Then findView
+				If Not me.view_ Is Nothing Then Set me.Doc_ = me.view_.getdocumentbykey(me.Doc_keyword_, me.search_doc_exactly_)
+			ElseIf DataType(me.doc_keyword_) = V_INTEGER Then
+				If me.view_ Is Nothing Then findView
+				If Not me.view_ Is Nothing Then Set me.Doc_ = me.view_.getnthdocument(me.Doc_keyword_)
+			Else ' string
+				If me.doc_keyword_ = "" Then
+					Set me.doc_ = Current.doc
+				Else
+					On Error Resume Next
+					If me.view_ Is Nothing Then findView
+					Set me.doc_ = me.view_.getdocumentbykey(me.doc_keyword_, me.search_doc_exactly_)
+					If me.db_ Is Nothing Then findDatabase
+					If me.doc_ Is Nothing Then Set me.doc_ = me.db_.getdocumentbyunid(me.doc_keyword_)
+					If me.doc_ Is Nothing Then Set me.doc_ = me.db_.getdocumentbyid(me.doc_keyword_)
+					If me.doc_ Is Nothing Then Set me.doc_ = NotesURL(me.doc_keyword_).getDocument
+					On Error GoTo 0
+				End If
+			End If
+		Else
+			If me.doc_keyword_ IsA "NotesDocument" Then
+				Set me.doc_ = me.Doc_keyword_
+			ElseIf me.doc_keyword_ IsA "Current" Then
+				Set me.doc_ = me.doc_keyword_.doc 
+			End If
+		End If
+		
+		
+		' log after finding document
+		If me.doc_ Is Nothing Then
+			aplogger.debug "document is not found"
+		Else
+			aplogger.debug "document is found: " & me.doc_.Notesurl
+		End If
+	End Sub
+	
+	
+	
+	' syntax sugar
+	Function db(p_keyword) As NotesDatabase
+		Set db = me.database(p_keyword)
+	End Function
+	Function doc(p_keyword) As NotesDocument
+		Set doc = me.Document(p_keyword)
+	End Function
+	
+	' class name
+	Property Get className As String
+		classname = "Find"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = ""
+	End Property
+End Class
+Private Class ObjectHistory As BasicClass
+	
+	find_records_ List As Variant
+	
+	Sub add(p_object)
+		If IsObject(p_object) Then
+			If p_object IsA "NotesDatabase" Then
+				Set me.find_records_(p_object.notesUrl) = p_object
+			End If
+		End If
+	End Sub
+	
+	
+	' class name
+	Property Get className As String
+		classname = "FindHistory"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = ""
+	End Property
+End Class
+Class NotesURL As BasicClass
+	
+	resolved_object_ As Variant
+	
+	Sub New(p_url)
+		Set me.resolved_object_ = Nothing ' set default to an object
+		On Error Resume Next
+		Set me.resolved_object_ = current.session.resolve(p_url)
+		On Error GoTo 0
+	End Sub
+	Function getDatabase As NotesDatabase
+		If Not me.resolved_object_ Is Nothing Then
+			If me.resolved_object_ IsA "NotesDatabase" Then
+				Set getDatabase = me.resolved_object_
+			ElseIf me.resolved_object_ IsA "NotesView" Or me.resolved_object_ IsA "NotesForm" Or me.resolved_object_ IsA "NotesAgent" Then
+				Set getDatabase = me.resolved_object_.parent
+			ElseIf me.resolved_object_ IsA "NotesDocument" Then
+				Set getDatabase = me.resolved_object_.parentDatabase
+			Else
+				Set getDatabase = Nothing
+			End If
+		End If
+	End Function
+	Function getView As NotesView
+		If Not me.resolved_object_ Is Nothing Then
+			If me.resolved_object_ IsA "NotesView" Then
+				Set getView = me.resolved_object_
+			Else
+				Set getView = Nothing
+			End If
+		End If
+	End Function
+	Function getDocument As NotesDocument
+		If Not me.resolved_object_ Is Nothing Then
+			If me.resolved_object_ IsA "NotesDocument" Then
+				Set getDocument = me.resolved_object_
+			Else
+				Set getDocument = Nothing
+			End If
+		End If
+	End Function
+	Function getForm As NotesForm
+		If Not me.resolved_object_ Is Nothing Then
+			If me.resolved_object_ IsA "NotesForm" Then
+				Set getForm = me.resolved_object_
+			Else
+				Set getForm = Nothing
+			End If
+		End If
+	End Function
+	Function getAgent As NotesAgent
+		If Not me.resolved_object_ Is Nothing Then
+			If me.resolved_object_ IsA "NotesAgent" Then
+				Set getAgent = me.resolved_object_
+			Else
+				Set getAgent = Nothing
+			End If
+		End If
+	End Function
+End Class
+%REM
+	get employee information from GlobalAddressBook(集團通訊錄)
+%END REM
+Class Employee As ID
+	
+	doc_ As NotesDocument
+	
+	' load document from GlobalAddressBook
+	Sub New(p_username), ID(p_username)
+		Set me.doc_ = Find.onDB(GlobalAddressBook).onView("SelectEN").exactly.doc(me.Abbreviated)
+'		Set me.doc_ = GlobalAddressBook.getView("SelectEN").Getdocumentbykey(me.Abbreviated, True)
+	End Sub
+	
+	Property Get isExist As Boolean
+		isExist = (Not me.doc_ Is Nothing)
+	End Property
+	
+	' 代理人
+	Property Get agent As Employee
+		If Not me.doc_ Is Nothing Then 
+			Set agent = New Employee(me.doc_.agent(0))
+		Else
+			Set agent = New Employee("")
+		End If
+	End Property
+	
+	' 主屬主管
+	Property Get directManager As Employee
+		If Not me.doc_ Is Nothing Then
+			Set directManager = Employee(me.doc_.UnitManager_1(0))
+		Else
+			Set directManager = New Employee("")
+		End If
+	End Property
+	
+	' 部門主管
+	Property Get deptManager As Employee
+		If Not me.doc_ Is Nothing Then
+			Set deptManager = Employee(me.doc_.UnitManager(0))
+		Else
+			Set deptManager = New Employee("")
+		End If
+	End Property
+	
+	' 最高主管
+	Property Get topManager As Employee
+		If Not me.doc_ Is Nothing Then
+			Set topManager = Employee(me.doc_.UnitManager_3(0))
+		Else
+			Set topManager = New Employee("")
+		End If
+	End Property
+	
+	' 組織名(英)
+	Property Get org As String
+		If Not me.doc_ Is Nothing Then org = me.doc_.org(0)
+	End Property
+	
+	' 公司名(中)
+	Property Get companyName As String
+		If Not me.doc_ Is Nothing Then companyName = StrRightBack("_" & me.doc_.companyName(0), "_")
+	End Property
+	
+	' 班別
+	Property Get workGroup As String
+		If Not me.doc_ Is Nothing Then workGroup = me.doc_.workgroup(0)
+	End Property
+	
+	' 全名(中/英 for 無中文名)
+	Property Get fullName As String
+		If Not me.doc_ Is Nothing Then fullName = me.doc_.fullname(0)
+	End Property
+	
+	' 職稱
+	Property Get jobTitle As String
+		If Not me.doc_ Is Nothing Then jobTitle = me.doc_.jobTitle(0)
+	End Property
+	
+	' 工作地點
+	Property Get workPlace As String
+		If Not me.doc_ Is Nothing Then workPlace = me.doc_.emp_location(0)
+	End Property
+	
+	' 座位編號
+	Property Get seatNo As String
+		If Not me.doc_ Is Nothing Then seatNo = me.doc_.seatNo(0)
+	End Property
+	
+	' 分機號碼
+	Property Get ext As String
+		If Not me.doc_ Is Nothing Then ext = me.doc_.phoneExt(0)
+	End Property
+	
+	' 分機號碼(出差)
+	Property Get extOnBusiness As String
+		If Not me.doc_ Is Nothing Then extOnBusiness = me.doc_.busExt(0)
+	End Property
+	
+	' 公司手機
+	Property Get cellphone As String
+		If Not me.doc_ Is Nothing Then cellphone = me.doc_.CellPhoneNumber_1(0)
+	End Property
+	
+	' 公司手機(簡碼)
+	Property Get cellPhoneExt As String
+		If Not me.doc_ Is Nothing Then cellPhoneExt = me.doc_.CellPhoneExt(0)
+	End Property
+	
+	' 個人手機
+	Property Get privatePhone As String
+		If Not me.doc_ Is Nothing Then privatePhone = me.doc_.CellPhoneNumber(0)
+	End Property
+	
+	' 公司信箱
+	Property Get eMail As String
+		If Not me.doc_ Is Nothing Then eMail = me.doc_.MailAddress(0)
+	End Property
+	
+	' skype 帳號
+	Property Get skype As String
+		If Not me.doc_ Is Nothing Then skype = me.doc_.skype(0)
+	End Property
+	
+	' wechat 帳號
+	Property Get wechat As String
+		If Not me.doc_ Is Nothing Then wechat = me.doc_.wechat(0)
+	End Property
+	
+	' line 帳號
+	Property Get lineNo As String 
+		If Not me.doc_ Is Nothing Then lineNo = me.doc_.line(0)
+	End Property
+	
+	' QQ 帳號
+	Property Get qq As String
+		If Not me.doc_ Is Nothing Then qq = me.doc_.qq(0)
+	End Property
+	
+	' syntax sugar: chinese = fullname
+	Property Get chinese As String
+		chinese = me.fullName
+	End Property
+	
+	' class name
+	Property Get className As String
+		className = "Employee"
+	End Property
+	
+	' class information
+	Property Get classInfo As String
+		classInfo = me.Abbreviated
+	End Property
+End Class
+Function Mailer As Mailer
+	Set Mailer = New Mailer
+End Function
+Static Function ErrorMailer As ErrorMailer
+	Static this As ErrorMailer
+	If this Is Nothing Then Set this = New ErrorMailer
+	Set ErrorMailer = this
+End Function
+Function EmptyArray As Array
+	Set EmptyArray = New Array
+End Function
+Function Employee(p_username) As Employee
+	Set Employee = New Employee(p_username)
+End Function
+Function NotesURL(p_url) As NotesURL
+	Set NotesURL = New NotesURL(p_url)
+End Function
+Static Function logger As Logger
+	Static this As Logger
+	If this Is Nothing Then Set this = New Logger(Current)
+	Set logger = this
+End Function
+Static Private Function ObjectHistory As ObjectHistory
+	Static this As ObjectHistory
+	If this Is Nothing Then Set this = New ObjectHistory
+	Set ObjectHistory = this
+End Function
+Function TestMailer As TestMailer
+	Set TestMailer = New TestMailer
+End Function
+Static Function Current As Current
+	Static this As Current
+	If this Is Nothing Then Set this = New Current
+	Set Current = this
+End Function
+Function Array(p_values) As Array
+	Set Array = New Array
+	Array.concat p_values
+End Function
+Function Find As Find
+	Set Find = New Find
+End Function
+Static Function GlobalAddressBook As NotesDatabase
+	Static this As NotesDatabase
+	If this Is Nothing Then Set this = Find.db(GLOBAL_ADDRESS_BOOK_FILEPATH)
+	Set GlobalAddressBook = this
+End Function
+Static Function ID(username) As ID
+	Set ID = New ID(username)
+End Function
+Static Function aplogger As APLogger
+	Static this As APLogger
+	If this Is Nothing Then Set this = New APLogger(Current)
+	Set aplogger = this
+End Function
+
+
+

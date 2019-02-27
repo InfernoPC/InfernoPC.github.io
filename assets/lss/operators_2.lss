@@ -1,0 +1,292 @@
+Option Public
+Option Declare
+Use "$LS_Methods_2"
+Class BasicOperator
+	Property Get className As String
+		classname = "BasicOperator"
+	End Property
+	Property Get classInfo As String
+		classInfo = ""
+	End Property
+	
+	Function since(ByVal p_values)
+		setVar since, p_values
+	End Function
+	Function toString As String
+		toString = "<#" & me.className & ":" & me.classInfo & ">"
+	End Function
+End Class
+Class ToString As BasicOperator
+	
+	Property Get className As String
+		classname = "ToString"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CStr(p_values)
+		ElseIf p_values IsA "BasicClass" Then
+			since = p_values.toString
+		End If
+	End Function
+End Class
+Class Pattern As BasicOperator
+	
+	format_ As String
+	
+	Sub New(p_format As String)
+		me.format_ = p_format
+	End Sub
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = Format(p_values, me.format_)
+		ElseIf p_values IsA "BasicClass" Then
+			since = p_values.toString
+		End If
+	End Function
+	
+	Property Get className As String
+		classname = "Pattern"
+	End Property
+	
+End Class
+Class ToInteger As BasicOperator
+	
+	Property Get className As String
+		classname = "ToInteger"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CInt(p_values)
+		End If
+	End Function
+End Class
+Class ToDouble As BasicOperator
+	
+	Property Get className As String
+		classname = "ToDouble"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = cdbl(p_values)
+		End If
+	End Function
+End Class
+Class ToLong As BasicOperator
+	
+	Property Get className As String
+		classname = "ToLong"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CLng(p_values)
+		End If
+	End Function
+End Class
+Class ToSingle As BasicOperator
+	
+	Property Get className As String
+		classname = "ToSingle"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CSng(p_values)
+		End If
+	End Function
+End Class
+
+Class ToBoolean As BasicOperator
+	
+	Property Get className As String
+		classname = "ToBoolean"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CBool(p_values)
+		End If
+	End Function
+End Class
+Class ToCurrency As BasicOperator
+	
+	Property Get className As String
+		classname = "ToCurrency"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CCur(p_values)
+		End If
+	End Function
+End Class
+Class ToByte As BasicOperator
+	
+	Property Get className As String
+		classname = "ToByte"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CByte(p_values)
+		End If
+	End Function
+End Class
+Class ToVariant As BasicOperator
+	
+	Property Get className As String
+		classname = "ToVariant"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CVar(p_values)
+		End If
+	End Function
+End Class
+Class ToDate As BasicOperator
+	
+	Property Get className As String
+		classname = "ToDate"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			since = CDat(p_values)
+		End If
+	End Function
+End Class
+Class Inspect As BasicOperator
+	
+	Property Get className As String
+		classname = "Inspect"
+	End Property
+	
+	Function since(ByVal p_values)
+		If IsArray(p_values) Then
+			Dim index As Long
+			For index = LBound(p_values) To UBound(p_values)
+				p_values(index) = me.since(p_values(index))
+			Next
+		ElseIf Not IsObject(p_values) Then
+			If DataType(p_values) = V_STRING Then
+				since = |"| & p_values & |"|
+			ElseIf DataType(p_values) = V_DATE Then
+				since = Format(p_values, FULL_DATETIME_FORMAT)
+			ElseIf DataType(p_values) = V_BOOLEAN Then
+				If p_values Then
+					since = "TRUE"
+				Else
+					since = "FALSE"
+				End If
+			ElseIf DataType(p_values) = V_EMPTY Then
+				since = "EMPTY"
+			ElseIf DataType(p_values) = V_NULL Then
+				since = "NULL"
+			Else
+				since = CStr(p_values)
+			End If
+		ElseIf p_values IsA "BasicClass" Then
+			since = p_values.toString
+		End If
+	End Function
+End Class
+
+Function ToByte As ToByte
+	Set ToByte = New ToByte
+End Function
+Function ToSingle As ToSingle
+	Set ToSingle = New ToSingle
+End Function
+Function ToInteger As ToInteger
+	Set ToInteger = New ToInteger
+End Function
+Function ToDate As Todate
+	Set ToDate = New ToDate
+End Function
+Function ToVariant As Tovariant
+	Set ToVariant = New ToVariant
+End Function
+
+Function ToCurrency As ToCurrency
+	Set ToCurrency = New ToCurrency
+End Function
+Function ToString As ToString
+	Set ToString = New ToString
+End Function
+
+Function ToDouble As Todouble
+	Set ToDouble = New ToDouble
+End Function
+Function ToBoolean As ToBoolean
+	Set ToBoolean = New ToBoolean
+End Function
+Function Pattern(p_format As String) As Pattern
+	Set Pattern = New Pattern(p_format)
+End Function
+Function Inspect As Inspect
+	Set Inspect = New Inspect
+End Function
+Function ToLong As ToLong
+	Set ToLong = New ToLong
+End Function
+
