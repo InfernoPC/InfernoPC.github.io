@@ -14,8 +14,9 @@ $ git config --global user.name "Tim Chen"
 $ git config --global user.email "inferno6562@gmail.com"
 ```
 
-2. add some useful alias
+2. add some useful configs
 ```shell
+$ git config --global core.editor "vim"
 $ git config --global alias.graph "log --graph --decorate --oneline"
 ```
 
