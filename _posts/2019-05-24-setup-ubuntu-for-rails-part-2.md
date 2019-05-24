@@ -3,7 +3,7 @@ layout: post
 title: "setup ubuntu for rails part 2"
 description: ""
 category: 
-tags: []
+tags: [Git, Vim, Ctrlp.vim, SSH keygen]
 ---
 
 # configure git
@@ -18,6 +18,7 @@ $ git config --global user.email "inferno6562@gmail.com"
 ```shell
 $ git config --global core.editor "vim"
 $ git config --global alias.graph "log --graph --decorate --oneline"
+$ git config --global push.default simple
 ```
 
 3. display branch name on shell (re-login is required)
@@ -79,3 +80,20 @@ set runtimepath^=~/.vim/bundle/ctrlp.vim
 ```
 
 4. restart vim and check `:help ctrlp.txt`
+
+# generate SSH keys for github/gitlab
+
+1. generate SSH keys
+```shell
+$ ssh-keygen
+$ cat ~/.ssh/id_rsa.pub
+```
+
+2. copy output and paste to github and gitlab
+
+# install rails
+
+1. install rails
+```shell
+$ gem install rails
+```
