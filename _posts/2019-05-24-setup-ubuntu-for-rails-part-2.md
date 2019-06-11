@@ -91,9 +91,26 @@ $ cat ~/.ssh/id_rsa.pub
 
 2. copy output and paste to github and gitlab
 
-# install rails
+# install rails 5 and 6
 
-1. install rails
+1. install rails at current gemset
 ```shell
 $ gem install rails
 ```
+
+2. create a new gemset
+```shell
+$ rvm gemset create rails600
+```
+
+3. switch to rails600
+```shell
+$ rvm use @rails600
+```
+
+4. list all rails version and install latest one(current latest version is 6.0.0.rc1)
+```shell
+$ gem list rails --remote --pre --all | grep -i "^rails "
+$ gem install rails -v 6.0.0.rc1
+```
+
