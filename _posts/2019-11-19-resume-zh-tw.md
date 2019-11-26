@@ -9,7 +9,8 @@ categories: resume
 [![GitHub](/assets/images/simple-icons/GitHub-Mark-32px.png)](https://github.com/InfernoPC) [![Linkedin](/assets/images/simple-icons/linkedin-icon-32.png)](https://www.linkedin.com/in/tim-chen-a51829161/) [![e-Mail](/assets/images/simple-icons/gmail-icon-32.png)](mailto:inferno6562@gmail.com)
 
 
-[![Project](/assets/images/simple-icons/project-icon-32.png)Projects](/blog/2018/06/05/project-list)
+[![Project](/assets/images/simple-icons/project-icon-32.png)DCT Projects](/blog/2018/06/05/project-list)
+[![Project](/assets/images/simple-icons/project-icon-32.png)IEI Projects](/blog/2019/11/26/iei-project)
 [![Side Project](/assets/images/simple-icons/side-project-icon-32.png)Side Projects](https://github.com/InfernoPC)
 
 ```
@@ -32,11 +33,12 @@ phone: 0928-572-532
 
 ## 專案成果
 
-* 透過 Web API 與 Oracle 進行資料串接
+* [多組織 Notes 系統維護及開發](/blog/2019/11/26/iei-project)
+* [透過 Web API 與 Oracle 進行資料串接](/blog/2019/11/26/iei-project#iei_item_selection)
 	* 以 LotusScript 呼叫 Http Get Method 取得 Oracle 系統上的資料
 * 電子發票介接系統開發
 	* 將公司內部現有的發票系統介接上電子發票Turnkey系統
-* [客戶專案開發](/blog/2018/06/05/project-list#customer_erp)
+* [客戶專案開發](/blog/2018/06/05/project-list#dct_customer_erp)
 	* 進銷存系統開發
 	* Notes Web化協助
 
