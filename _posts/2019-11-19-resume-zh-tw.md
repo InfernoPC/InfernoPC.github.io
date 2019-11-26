@@ -36,7 +36,7 @@ phone: 0928-572-532
 	* 以 LotusScript 呼叫 Http Get Method 取得 Oracle 系統上的資料
 * 電子發票介接系統開發
 	* 將公司內部現有的發票系統介接上電子發票Turnkey系統
-* 客戶專案開發
+* [客戶專案開發](/blog/2018/06/05/project-list#customer_erp)
 	* 進銷存系統開發
 	* Notes Web化協助
 
