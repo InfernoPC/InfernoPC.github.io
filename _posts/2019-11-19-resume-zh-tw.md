@@ -11,7 +11,7 @@ categories: resume
 
 [![Project](/assets/images/simple-icons/project-icon-32.png)DCT Projects](/blog/2018/06/05/project-list)
 [![Project](/assets/images/simple-icons/project-icon-32.png)IEI Projects](/blog/2019/11/26/iei-project)
-[![Side Project](/assets/images/simple-icons/side-project-icon-32.png)Side Projects](https://github.com/InfernoPC)
+[![Side Project](/assets/images/simple-icons/side-project-icon-32.png)Side Projects](/blog/2019/12/20/side-project/)
 
 ```
 E-mail: inferno6562@gmail.com
@@ -44,8 +44,7 @@ phone: 0928-572-532
 
 ## Side Project
 
-* 濃度換算/稀釋計算工具
-	* <https://infernopc.github.io/clamp-chemistry/>
+* <https://infernopc.github.io/blog/2019/12/20/side-project/>
 
 ## 未來目標
 
