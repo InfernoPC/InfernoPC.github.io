@@ -1,0 +1,96 @@
+[
+  {
+    "id": "toolkit",
+    "title": "Toolkit",
+    "desc": "貼上文字，自動判斷格式並解析",
+    "url": "/toolkit/",
+    "category": "tools",
+    "icon": "🧰",
+    "color": "yellow",
+    "badge": "pinned",
+    "key": "t",
+    "tags": ["base64", "url", "json", "jwt", "encode", "decode", "工具包"]
+  },
+  {
+    "id": "qrcode",
+    "title": "QR Code",
+    "desc": "產生 QR Code，下載 PNG、SVG、JPG",
+    "url": "/qrcode-generator/",
+    "category": "tools",
+    "icon": "▦",
+    "color": "mint",
+    "key": "q",
+    "tags": ["qrcode", "產生器", "wifi", "vcard"]
+  },
+  {
+    "id": "blog",
+    "title": "Blog",
+    "desc": "Notes、Rails、Ubuntu 的筆記",
+    "url": "/blog/",
+    "category": "writing",
+    "icon": "✎",
+    "color": "pink",
+    "badge": { "type": "new", "until": "2026-12-31" },
+    "key": "b",
+    "tags": ["文章", "lotusscript", "notes", "rails"]
+  },
+  {
+    "id": "about-me",
+    "title": "About me",
+    "desc": "名片與聯絡方式",
+    "url": "/about-me/",
+    "category": "writing",
+    "icon": "☺",
+    "color": "sky",
+    "key": "a",
+    "tags": ["名片", "vcard", "聯絡"]
+  },
+  {
+    "id": "miaozhu",
+    "title": "Miaozhu",
+    "desc": "住在桌面上的 AI 助手",
+    "url": "https://github.com/InfernoPC/Miaozhu",
+    "category": "projects",
+    "icon": "◐",
+    "color": "lilac",
+    "tags": ["ai", "desktop", "agent", "typescript"]
+  },
+  {
+    "id": "meme-gallery",
+    "title": "Meme Gallery",
+    "desc": "本機貼圖與梗圖管理",
+    "url": "https://github.com/InfernoPC/meme_gallery",
+    "category": "projects",
+    "icon": "▤",
+    "color": "yellow",
+    "tags": ["meme", "sticker", "梗圖", "貼圖"]
+  },
+  {
+    "id": "notes-client-mcp",
+    "title": "Notes Client MCP",
+    "desc": "HCL Notes 用的 MCP server",
+    "url": "https://github.com/InfernoPC/notes-client-mcp",
+    "category": "projects",
+    "icon": "⌘",
+    "color": "mint",
+    "tags": ["mcp", "hcl", "lotus", "notes"]
+  },
+  {
+    "id": "myage",
+    "title": "My True Age",
+    "desc": "算出你的真實年齡",
+    "url": "/myage/",
+    "category": "archive",
+    "icon": "⧗",
+    "badge": { "type": "year", "text": "2018" }
+  },
+  {
+    "id": "clamp-chemistry",
+    "title": "Calc Chemistry",
+    "desc": "化學計算小工具",
+    "url": "/clamp-chemistry/",
+    "category": "archive",
+    "icon": "⚗",
+    "badge": { "type": "year", "text": "2019" }
+  }
+]

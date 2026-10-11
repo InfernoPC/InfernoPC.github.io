@@ -1,0 +1,17 @@
+{
+  "template": "sticker",
+  "greeting": "Hi, I'm Tim!",
+  "bio": "PM，下班喜歡做小工具。這裡是我所有東西的入口。",
+  "social": [
+    { "label": "GitHub", "url": "https://github.com/InfernoPC", "color": "yellow" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/tim-chen-a51829161/", "color": "sky" },
+    { "label": "名片", "url": "/about-me/" }
+  ],
+  "categories": [
+    { "id": "tools", "label": "工具" },
+    { "id": "writing", "label": "文章" },
+    { "id": "projects", "label": "專案" },
+    { "id": "archive", "label": "舊作品", "muted": true }
+  ],
+  "footer": "按 <kbd class=\"ui-kbd\">/</kbd> 搜尋，或直接按卡片角落的字母開啟。"
+}

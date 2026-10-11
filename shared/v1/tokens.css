@@ -1,0 +1,71 @@
+/* InfernoPC shared design tokens — v1
+   v1 只做不破壞的改動；改名或刪除請開 v2。 */
+
+:root {
+  color-scheme: light;
+
+  --ui-yellow: #ffd23f;
+  --ui-mint: #7ee0c3;
+  --ui-pink: #ff8fab;
+  --ui-sky: #9ad1ff;
+  --ui-lilac: #c6b6ff;
+  --ui-cream: #f3ead6;
+
+  /* 卡片底色：淺色版都是白，深色版各自換成深一階的顏色 */
+  --ui-yellow-deep: #fff;
+  --ui-mint-deep: #fff;
+  --ui-pink-deep: #fff;
+  --ui-sky-deep: #fff;
+  --ui-lilac-deep: #fff;
+
+  --ui-bg: #fdf6e3;
+  --ui-dot: #e8dcb8;
+  --ui-line: #1d1b22;
+  --ui-text: #1d1b22;
+  --ui-text-sub: rgba(29, 27, 34, 0.7);
+  --ui-on-color: #1d1b22;
+  --ui-surface: #fff;
+  --ui-field: #fff;
+  --ui-muted: #e6dfcc;
+  --ui-muted-surface: #fff;
+  --ui-focus: #2f6fe4;
+
+  --ui-font: "Space Grotesk", "Noto Sans TC", system-ui, sans-serif;
+  --ui-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --ui-border-width: 2px;
+  --ui-border: var(--ui-border-width) solid var(--ui-line);
+  --ui-radius: 14px;
+  --ui-radius-sm: 9px;
+  --ui-radius-pill: 999px;
+
+  --ui-shadow-offset: 5px;
+  --ui-space: 16px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ui-yellow: #f5c93e;
+  --ui-mint: #74d9bb;
+  --ui-pink: #f78aa6;
+  --ui-sky: #93c9f7;
+  --ui-lilac: #b9a8f7;
+
+  --ui-yellow-deep: #4a3f1f;
+  --ui-mint-deep: #1f4a3f;
+  --ui-pink-deep: #4d2a36;
+  --ui-sky-deep: #1e3a52;
+  --ui-lilac-deep: #36305a;
+
+  --ui-bg: #211f2c;
+  --ui-dot: #2e2b3b;
+  --ui-line: #0c0b10;
+  --ui-text: #f4eee2;
+  --ui-text-sub: rgba(244, 238, 226, 0.7);
+  --ui-surface: #34304a;
+  --ui-field: #1e3a52;
+  --ui-muted: #4b4658;
+  --ui-muted-surface: #34304a;
+  --ui-focus: #93c9f7;
+}
