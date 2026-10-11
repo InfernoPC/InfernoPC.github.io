@@ -1,0 +1,139 @@
+/* InfernoPC shared components — v1。需要先載入 tokens.css
+   顏色用 --ui-accent 指定，例如 style="--ui-accent: var(--ui-mint)" */
+
+.ui-card {
+  --ui-accent: var(--ui-yellow);
+  --ui-card-bg: var(--ui-surface);
+  position: relative;
+  display: block;
+  background: var(--ui-card-bg);
+  color: var(--ui-text);
+  border: var(--ui-border);
+  border-radius: var(--ui-radius);
+  padding: 14px 15px;
+  text-decoration: none;
+  box-shadow:
+    var(--ui-shadow-offset) var(--ui-shadow-offset) 0 var(--ui-accent),
+    var(--ui-shadow-offset) var(--ui-shadow-offset) 0 var(--ui-border-width) var(--ui-line);
+}
+
+.ui-card-yellow { --ui-accent: var(--ui-yellow); --ui-card-bg: var(--ui-yellow-deep); }
+.ui-card-mint { --ui-accent: var(--ui-mint); --ui-card-bg: var(--ui-mint-deep); }
+.ui-card-pink { --ui-accent: var(--ui-pink); --ui-card-bg: var(--ui-pink-deep); }
+.ui-card-sky { --ui-accent: var(--ui-sky); --ui-card-bg: var(--ui-sky-deep); }
+.ui-card-lilac { --ui-accent: var(--ui-lilac); --ui-card-bg: var(--ui-lilac-deep); }
+
+a.ui-card {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+a.ui-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow:
+    calc(var(--ui-shadow-offset) + 2px) calc(var(--ui-shadow-offset) + 2px) 0 var(--ui-accent),
+    calc(var(--ui-shadow-offset) + 2px) calc(var(--ui-shadow-offset) + 2px) 0 var(--ui-border-width) var(--ui-line);
+}
+
+a.ui-card:active {
+  transform: translate(3px, 3px);
+  box-shadow:
+    1px 1px 0 var(--ui-accent),
+    1px 1px 0 var(--ui-border-width) var(--ui-line);
+}
+
+.ui-chip {
+  --ui-accent: var(--ui-surface);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: var(--ui-border);
+  border-radius: var(--ui-radius-pill);
+  padding: 3px 12px;
+  background: var(--ui-accent);
+  color: var(--ui-on-color);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 var(--ui-line);
+}
+
+.ui-chip[data-plain] {
+  color: var(--ui-text);
+}
+
+.ui-badge {
+  --ui-accent: var(--ui-pink);
+  display: inline-block;
+  border: var(--ui-border);
+  border-radius: var(--ui-radius-pill);
+  padding: 0 8px;
+  background: var(--ui-accent);
+  color: var(--ui-on-color);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+  box-shadow: 0 0 0 3px var(--ui-bg);
+}
+
+.ui-button {
+  --ui-accent: var(--ui-yellow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  padding: 6px 14px;
+  background: var(--ui-accent);
+  color: var(--ui-on-color);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--ui-line);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.ui-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ui-line);
+}
+
+.ui-input {
+  width: 100%;
+  border: var(--ui-border);
+  border-radius: 12px;
+  padding: 11px 15px;
+  background: var(--ui-field);
+  color: var(--ui-text);
+  font: inherit;
+  box-shadow:
+    4px 4px 0 var(--ui-sky),
+    4px 4px 0 var(--ui-border-width) var(--ui-line);
+}
+
+.ui-input::placeholder {
+  color: var(--ui-text-sub);
+}
+
+.ui-kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  border: var(--ui-border);
+  border-radius: 6px;
+  padding: 0 6px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-family: var(--ui-font);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+
+:root[data-theme="dark"] .ui-kbd {
+  background: var(--ui-sky);
+  color: var(--ui-on-color);
+}
